@@ -1,10 +1,12 @@
-using HogwartsPotions.Models;
+using HogwartsPotions.Data;
+using HogwartsPotions.Data.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Text.Json.Serialization;
 
 namespace HogwartsPotions
 {
@@ -22,6 +24,11 @@ namespace HogwartsPotions
         {
             services.AddDbContext<HogwartsContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
+            services.AddScoped<IRoomService, RoomService>();
 
             services.AddControllersWithViews();
         }
@@ -52,6 +59,8 @@ namespace HogwartsPotions
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            DbInit.Seed(app);
         }
     }
 }
