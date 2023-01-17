@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HogwartsPotions.Models.Entities
 {
@@ -9,5 +10,6 @@ namespace HogwartsPotions.Models.Entities
 
         public string Name { get; set; }
         public Student student { get; set; }
+        public List<Ingredient> Ingredients { get; set; }
     }
 }
