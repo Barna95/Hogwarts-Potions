@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using HogwartsPotions.Data;
 using HogwartsPotions.Data.Services;
 using HogwartsPotions.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -23,31 +22,31 @@ namespace HogwartsPotions.Controllers
             return await _service.GetAllRooms();
         }
 
-        [HttpPost]
+        [HttpPost("/room")]
         public async  Task AddRoom([FromBody] Room room)
         {
             await _service.AddRoom(room);
         }
 
-        [HttpGet("/{id}")]
+        [HttpGet("/room/{id}")]
         public async Task<Room> GetRoomById(long id)
         {
             return await _service.GetRoom(id);
         }
 
-        [HttpPut("/{id}")]
+        [HttpPut("/room/{id}")]
         public void UpdateRoomById(long id, [FromBody] Room updatedRoom)
         {
             _service.UpdateRoom(id, updatedRoom);
         }
 
-        [HttpDelete("/{id}")]
+        [HttpDelete("/room/{id}")]
         public async Task DeleteRoomById(long id)
         {
             await _service.DeleteRoom(id);
         }
 
-        [HttpGet("/rat-owners")]
+        [HttpGet("/room/rat-owners")]
         public async Task<List<Room>> GetRoomsForRatOwners()
         {
             return await _service.GetRoomsForRatOwners();
