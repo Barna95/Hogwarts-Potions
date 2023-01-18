@@ -25,12 +25,11 @@ namespace HogwartsPotions.Data.Services
             Recipe recipeIfReplica = null;
             foreach (var recipe in allRecipes)
             {
-                int index = -1;
                 int counter = 0;
                 foreach (var ingredient in potion.Ingredients)
                 {
-                    index++;
-                    if (ingredient.Name == recipe.Ingredients[index].Name)
+                    var ingredientExists = GetIngredientChecked(recipe, ingredient);
+                    if (ingredientExists)
                     {
                         counter++;
                     }
@@ -57,7 +56,7 @@ namespace HogwartsPotions.Data.Services
                 {
                     Name = name,
                     Recipe = newRecipe,
-                    Ingredients = newRecipe.Ingredients,
+                    Ingredients = ConnectIngredients(newRecipe.Ingredients),
                     Student = brewer,
                     BrewingStatus = potionStatus
                 };
@@ -68,7 +67,7 @@ namespace HogwartsPotions.Data.Services
                 {
                     Name = name,
                     Recipe = recipeIfReplica,
-                    Ingredients = potion.Ingredients,
+                    Ingredients = ConnectIngredients(recipeIfReplica.Ingredients),
                     Student = brewer,
                     BrewingStatus = potionStatus
                 };
@@ -80,15 +79,14 @@ namespace HogwartsPotions.Data.Services
         public async Task<Potion> GetPotion(long potionId)
         {
             return await _context.Potions.Include(p => p.Ingredients)
-                .Include(p => p.Recipe)
-                .Include(p => p.Student)
                 .FirstOrDefaultAsync(r => r.ID == potionId);
         }
 
         public async Task<List<Potion>> GetAllPotions()
         {
             return await _context.Potions.Include(p => p.Ingredients)
-                .Include(p =>p.Recipe).ToListAsync();
+                .Include(p =>p.Recipe)
+                .Include(p => p.Student).AsNoTracking().ToListAsync();
         }
 
         public async Task UpdatePotion(long id, Potion potion)
@@ -109,11 +107,28 @@ namespace HogwartsPotions.Data.Services
             await _context.SaveChangesAsync();
         }
 
+        // Helpers----------------------------------------------------
         public Task<Student> GetStudent(long studentId)
         {
             var student = _context.Students.Include(student => student.Room).ToListAsync().Result
                 .FirstOrDefault(student => student.ID == studentId);
             return Task.FromResult(student);
+        }
+
+        public bool GetIngredientChecked(Recipe recipe, Ingredient ingredient)
+        {
+            var theIngredient = recipe.Ingredients.FirstOrDefault(ing => ing.Name.Equals(ingredient.Name));
+            return theIngredient != null;
+        }
+
+        public HashSet<Ingredient> ConnectIngredients(HashSet<Ingredient> ingredients)
+        {
+            var newSet = new HashSet<Ingredient>();
+            foreach (var ingredient in ingredients)
+            {
+                newSet.Add(_context.Ingredients.FirstOrDefault(ing => ing.Name == ingredient.Name));
+            }
+            return newSet;
         }
     }
 }
