@@ -107,6 +107,11 @@ namespace HogwartsPotions.Data.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<Potion>> GetAllPotionsOfAStudent(long id)
+        {
+            return await _context.Potions.Where(pot => pot.Student.ID == id).Include(p => p.Recipe).ToListAsync();
+        }
+
         // Helpers----------------------------------------------------
         public Task<Student> GetStudent(long studentId)
         {
