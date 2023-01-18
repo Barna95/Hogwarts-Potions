@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HogwartsPotions.Controllers
 {
-    [ApiController, Route("/potions")]
+    [ApiController, Route("[controller]")]
     public class PotionController : ControllerBase
     {
         private readonly IPotionService _service;
@@ -16,34 +16,40 @@ namespace HogwartsPotions.Controllers
             _service = service;
         }
 
-        [HttpGet("/potions")]
+        [HttpGet]
         public async Task<List<Potion>> GetPotions()
         {
             return await _service.GetAllPotions();
         }
 
-        [HttpPost("/potions")]
+        [HttpPost]
         public async Task AddPotion([FromBody] Potion potion)
         {
             await _service.AddPotion(potion);
         }
 
-        [HttpGet("/potions/{id}")]
+        [HttpGet("{id}")]
         public async Task<Potion> GetPotionById(long id)
         {
             return await _service.GetPotion(id);
         }
 
-        [HttpPut("/potions/{id}")]
+        [HttpPut("{id}")]
         public void UpdatePotionById(long id, [FromBody] Potion updatedPotion)
         {
             _service.UpdatePotion(id, updatedPotion);
         }
 
-        [HttpDelete("/potions/{id}")]
+        [HttpDelete("{id}")]
         public async Task DeletePotionById(long id)
         {
             await _service.DeletePotion(id);
+        }
+
+        [HttpGet("/student/{studentId}")]
+        public async Task<List<Potion>> GetAllPotionsOfAStudent(long studentId)
+        {
+            return await _service.GetAllPotionsOfAStudent(studentId);
         }
     }
 }

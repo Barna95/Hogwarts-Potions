@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HogwartsPotions.Controllers
 {
-    [ApiController, Route("/room")]
+    [ApiController, Route("[controller]")]
     public class RoomController : ControllerBase
     {
         private readonly IRoomService _service;
@@ -22,31 +22,31 @@ namespace HogwartsPotions.Controllers
             return await _service.GetAllRooms();
         }
 
-        [HttpPost("/room")]
+        [HttpPost]
         public async  Task AddRoom([FromBody] Room room)
         {
             await _service.AddRoom(room);
         }
 
-        [HttpGet("/room/{id}")]
+        [HttpGet("{id}")]
         public async Task<Room> GetRoomById(long id)
         {
             return await _service.GetRoom(id);
         }
 
-        [HttpPut("/room/{id}")]
+        [HttpPut("{id}")]
         public void UpdateRoomById(long id, [FromBody] Room updatedRoom)
         {
             _service.UpdateRoom(id, updatedRoom);
         }
 
-        [HttpDelete("/room/{id}")]
+        [HttpDelete("{id}")]
         public async Task DeleteRoomById(long id)
         {
             await _service.DeleteRoom(id);
         }
 
-        [HttpGet("/room/rat-owners")]
+        [HttpGet("/rat-owners")]
         public async Task<List<Room>> GetRoomsForRatOwners()
         {
             return await _service.GetRoomsForRatOwners();
