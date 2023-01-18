@@ -105,7 +105,7 @@ namespace HogwartsPotions.Data
                 {
                     Name = "Jóska's discovery#1",
                     student = Jóska,
-                    Ingredients = new List<Ingredient>(),
+                    Ingredients = new HashSet<Ingredient>(),
                 };
                 jóskaRecipe.Ingredients.Add(paprika);
                 jóskaRecipe.Ingredients.Add(branchOfLife);
@@ -117,7 +117,7 @@ namespace HogwartsPotions.Data
                 var jóskaPotion = new Potion()
                 {
                     BrewingStatus = BrewingStatus.Discovery,
-                    Ingredients = new List<Ingredient>(),
+                    Ingredients = new HashSet<Ingredient>(),
                     Name = "Jóska Potion",
                     Recipe = jóskaRecipe,
                     Student = Jóska
@@ -154,7 +154,7 @@ namespace HogwartsPotions.Data
                 }
                 if (!context.Ingredients.Any())
                 {
-                    context.Ingredients.AddRange(new List<Ingredient>()
+                    context.Ingredients.AddRange(new HashSet<Ingredient>()
                     {
                         ginger,
                         catFur,

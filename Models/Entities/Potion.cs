@@ -12,8 +12,14 @@ namespace HogwartsPotions.Models.Entities
 
         public string Name { get; set; }
         public Student Student { get; set; }
-        public List<Ingredient> Ingredients { get; set; }
+        public HashSet<Ingredient> Ingredients { get; set; }
         public Recipe Recipe { get; set; }
         public BrewingStatus BrewingStatus { get; set; }
+
+        public Potion()
+        {
+            Ingredients = new HashSet<Ingredient>();
+            BrewingStatus = BrewingStatus.Brew;
+        }
     }
 }
