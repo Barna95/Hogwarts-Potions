@@ -16,7 +16,7 @@ namespace HogwartsPotions.Data.Services
             _context = context;
         }
 
-        public async Task AddPotion(Potion potion)
+        public async Task<Potion> AddPotion(Potion potion)
         {
             var potionStatus = BrewingStatus.Discovery;
             var studentID = potion.Student.ID;
@@ -76,6 +76,8 @@ namespace HogwartsPotions.Data.Services
                 _context.Potions.Add(newPotion);
             }
             await _context.SaveChangesAsync();
+            var theLastPotionBender = _context.Potions.OrderBy(p => p.ID).AsNoTracking().Last();
+            return theLastPotionBender;
         }
 
         public async Task<Potion> GetPotion(long potionId)
@@ -196,6 +198,18 @@ namespace HogwartsPotions.Data.Services
                 return potion;
             }
             return potion;
+        }
+
+        public async Task<List<Recipe>> GetRecipesThatHasTheAddedIngredients(long id)
+        {
+            var potion = await GetPotion(id);
+            return await _context.Recipes
+                .Include(r => r.Ingredients)
+                .Where(r => r.Ingredients
+                    .Any(ingredient => potion.Ingredients
+                        .Contains(ingredient)))
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         // Helpers----------------------------------------------------

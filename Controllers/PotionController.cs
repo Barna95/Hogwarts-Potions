@@ -24,9 +24,9 @@ namespace HogwartsPotions.Controllers
         }
 
         [HttpPost]
-        public async Task AddPotion([FromBody] Potion potion)
+        public async Task<Potion> AddPotion([FromBody] Potion potion)
         {
-            await _service.AddPotion(potion);
+            return await _service.AddPotion(potion);
         }
 
         [HttpGet("{id}")]
@@ -63,6 +63,12 @@ namespace HogwartsPotions.Controllers
         public async Task<Potion> AddIngredientToPotion(long id, [FromBody] Ingredient ingredient)
         {
             return await _service.AddIngredientToPotion(id, ingredient);
+        }
+
+        [HttpGet("{id}/help")]
+        public async Task<List<Recipe>> GetRecipesThatHasTheAddedIngredients(long id)
+        {
+            return await _service.GetRecipesThatHasTheAddedIngredients(id);
         }
     }
 }
