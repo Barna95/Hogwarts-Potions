@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Threading.Tasks;
 using HogwartsPotions.Models.Entities;
 using HogwartsPotions.Models.Enums;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace HogwartsPotions.Data.Services
 {
@@ -37,40 +37,42 @@ namespace HogwartsPotions.Data.Services
 
                 if (counter == 5)
                 {
-                    potionStatus = BrewingStatus.Replica;
-                    recipeIfReplica = recipe;
+                     potionStatus = BrewingStatus.Replica;
+                     recipeIfReplica = recipe;
                 }
             }
-            var name = $"{brewer.Name}'s {potionStatus}";
-           
+
             if (potionStatus == BrewingStatus.Discovery)
             {
                 var newRecipe = new Recipe()
                 {
                     Ingredients = potion.Ingredients,
-                    Name = name,
                     student = brewer
                 };
 
                 var newPotion = new Potion()
                 {
-                    Name = name,
                     Recipe = newRecipe,
                     Ingredients = ConnectIngredients(newRecipe.Ingredients),
                     Student = brewer,
                     BrewingStatus = potionStatus
                 };
+                var name = $"{brewer.Name}'s {potionStatus} #{PotionCounter(newPotion)}";
+                newPotion.Name = name;
+                newPotion.Recipe.Name = name;
                 _context.Potions.Add(newPotion);
             } else if (potionStatus == BrewingStatus.Replica)
             {
                 var newPotion = new Potion()
                 {
-                    Name = name,
                     Recipe = recipeIfReplica,
                     Ingredients = ConnectIngredients(recipeIfReplica.Ingredients),
                     Student = brewer,
                     BrewingStatus = potionStatus
                 };
+                var name = $"{brewer.Name}'s {potionStatus} #{PotionCounter(newPotion)}";
+                newPotion.Name = name;
+                newPotion.Recipe.Name = name;
                 _context.Potions.Add(newPotion);
             }
             await _context.SaveChangesAsync();
@@ -112,10 +114,22 @@ namespace HogwartsPotions.Data.Services
             return await _context.Potions.Where(pot => pot.Student.ID == id).Include(p => p.Recipe).ToListAsync();
         }
 
+        public async Task<Potion> BrewPotion(long id)
+        {
+            var newPotion = new Potion();
+            var student = GetStudent(id).Result;
+            newPotion.Name = $"{student.Name}'s Potion";
+            newPotion.Student = student;
+            newPotion.BrewingStatus = BrewingStatus.Brew;
+            _context.Potions.Add(newPotion);
+            await _context.SaveChangesAsync();
+            return newPotion;
+        }
+
         // Helpers----------------------------------------------------
         public Task<Student> GetStudent(long studentId)
         {
-            var student = _context.Students.Include(student => student.Room).ToListAsync().Result
+            var student = _context.Students
                 .FirstOrDefault(student => student.ID == studentId);
             return Task.FromResult(student);
         }
@@ -134,6 +148,15 @@ namespace HogwartsPotions.Data.Services
                 newSet.Add(_context.Ingredients.FirstOrDefault(ing => ing.Name == ingredient.Name));
             }
             return newSet;
+        }
+
+        private int PotionCounter(Potion potion)
+        {
+            var baseIndex = 1;
+            var count = _context.Potions.Count(p =>
+                p.Student == potion.Student &&
+                p.BrewingStatus == potion.BrewingStatus) + baseIndex;
+            return count;
         }
     }
 }
