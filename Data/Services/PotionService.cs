@@ -126,6 +126,78 @@ namespace HogwartsPotions.Data.Services
             return newPotion;
         }
 
+        public async Task<Potion> AddIngredientToPotion(long id, Ingredient ingredient)
+        {
+            if (id < _context.Potions.Count())
+            {
+                return null;
+            }
+            var potion = _context.Potions
+                .Include(p => p.Ingredients)
+                .Include(p => p.Student)
+                .FirstOrDefaultAsync(r => r.ID == id).Result;
+
+            var ingredients = _context.Ingredients.ToList();
+            if (IngredientCheckInAllIngredients(ingredients, ingredient))
+            {
+                var dbIngredient = ingredients.FirstOrDefault(ing => ing.Name.Equals(ingredient.Name));
+                potion.Ingredients.Add(dbIngredient);
+                await _context.SaveChangesAsync();
+            }
+            else if (!IngredientCheckInAllIngredients(ingredients, ingredient))
+            {
+                _context.Ingredients.Add(ingredient);
+                potion.Ingredients.Add(ingredient);
+                await _context.SaveChangesAsync();
+            } 
+            if (potion.Ingredients.Count == 5)
+            {
+                var allRecipes = _context.Recipes.Include(recipe => recipe.Ingredients);
+                bool isReplica = false;
+                Recipe replicaRecipe = null;
+                foreach (var recipe in allRecipes)
+                {
+                    int counter = 0;
+                    foreach (var ing in potion.Ingredients)
+                    {
+                        var ingredientExists = GetIngredientChecked(recipe, ing);
+                        if (ingredientExists)
+                        {
+                            counter++;
+                        }
+                    }
+
+                    if (counter == 5)
+                    {
+                        isReplica = true;
+                        replicaRecipe = recipe;
+
+                    }
+                }
+
+                if (isReplica)
+                {
+                    potion.BrewingStatus = BrewingStatus.Replica;
+                    potion.Recipe = replicaRecipe;
+                    potion.Name = $"{potion.Student.Name}'s {potion.BrewingStatus} #{PotionCounter(potion)}";
+                } else if (!isReplica)
+                {
+                    potion.BrewingStatus = BrewingStatus.Discovery;
+                    potion.Name = $"{potion.Student.Name}'s {potion.BrewingStatus} #{PotionCounter(potion)}";
+                    potion.Recipe = new Recipe();
+                    potion.Recipe.Name = $"{potion.Student.Name}'s {potion.BrewingStatus}";
+                    potion.Recipe.student = potion.Student;
+                    potion.Recipe.Ingredients = potion.Ingredients;
+                    _context.Recipes.Add(potion.Recipe);
+                }
+                await _context.SaveChangesAsync();
+            } else if (potion.Ingredients.Count > 5)
+            {
+                return potion;
+            }
+            return potion;
+        }
+
         // Helpers----------------------------------------------------
         public Task<Student> GetStudent(long studentId)
         {
@@ -137,6 +209,12 @@ namespace HogwartsPotions.Data.Services
         public bool GetIngredientChecked(Recipe recipe, Ingredient ingredient)
         {
             var theIngredient = recipe.Ingredients.FirstOrDefault(ing => ing.Name.Equals(ingredient.Name));
+            return theIngredient != null;
+        }
+
+        public bool IngredientCheckInAllIngredients(List<Ingredient> ingredients, Ingredient ingredient)
+        {
+            var theIngredient = ingredients.FirstOrDefault(ing => ing.Name.Equals(ingredient.Name));
             return theIngredient != null;
         }
 
