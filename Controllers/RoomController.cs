@@ -23,7 +23,7 @@ namespace HogwartsPotions.Controllers
         }
 
         [HttpPost]
-        public async  Task AddRoom([FromBody] Room room)
+        public async Task AddRoom([FromBody] Room room)
         {
             await _service.AddRoom(room);
         }

@@ -13,5 +13,6 @@ namespace HogwartsPotions.Data.Services
         public Task DeletePotion(long id);
         public Task<List<Potion>> GetAllPotionsOfAStudent(long id);
         public Task<Potion> BrewPotion(long id);
+        public Task<Potion> AddIngredientToPotion(long id, Ingredient ingredient);
     }
 }
