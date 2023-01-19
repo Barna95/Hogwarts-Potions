@@ -1,4 +1,5 @@
-﻿using HogwartsPotions.Data.Services;
+﻿using System;
+using HogwartsPotions.Data.Services;
 using HogwartsPotions.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -46,10 +47,16 @@ namespace HogwartsPotions.Controllers
             await _service.DeletePotion(id);
         }
 
-        [HttpGet("/student/{studentId}")]
+        [HttpGet("student/{studentId}")]
         public async Task<List<Potion>> GetAllPotionsOfAStudent(long studentId)
         {
             return await _service.GetAllPotionsOfAStudent(studentId);
+        }
+
+        [HttpPost("brew")]
+        public async Task<Potion> BrewPotion([FromForm] long id)
+        {
+            return await _service.BrewPotion(id);
         }
     }
 }
