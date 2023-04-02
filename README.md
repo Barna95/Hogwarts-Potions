@@ -14,7 +14,7 @@
 
 1. Clone the repo
 ```powershell
-git clone https://github.com/Eriknpy/hogwarts-potions.git
+git clone https://github.com/Barna95/Hogwarts-Potions.git
 ```
 2. Open the .sln file and start the project in Visual Studio
 
