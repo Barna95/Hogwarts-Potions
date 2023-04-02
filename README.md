@@ -1,6 +1,6 @@
 <h1 align="center">Hogwarts Potions</h1>
 
-<h4 align="center">Harry Potter themed project, to manage potions and rooms with requests. Based on Entity Framework Core and RESTFUL API.(A refactor is needed to clean up the code still!)<br><br><br>
+<h4 align="center">Harry Potter themed project, to manage potions and rooms with requests. Based on Entity Framework Core and RESTFUL API.(A refactor is incoming later to clean up the code!)<br><br><br>
 <a href="https://github.com/Barna95/Hogwarts-Potions/issues">Report Bug</a>
     ·
     <a href="https://github.com/Barna95/Hogwarts-Potions/issues">Request Feature</a></h4>
